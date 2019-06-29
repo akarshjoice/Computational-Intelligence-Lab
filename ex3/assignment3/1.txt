@@ -1,0 +1,73 @@
+(defun main(n)
+     (final (nqueen (list (cons 0 (createlist (* n n)))) '() n) n 0 0)
+)
+
+(defun createlist(n)
+    (if(= n 0) '()
+                (cons 0 (createlist (- n 1)))
+    )
+ )
+
+ (defun generatechild(list i n level total)
+ ( if(not (< i n)) '()
+            (if(= (admissible list level (mod i total) total 0 0) 1)
+                         (cons (cons (+ level 1) (child list i 0)) (generatechild list (+ i 1) n level total))
+                         (generatechild list (+ i 1) n level total)
+            )
+ )
+ )
+
+ (defun child(list i j)
+   (if(null list) '()
+                   (if(= i j) (cons 1 (child (cdr list) i (+ j 1)))
+                              (cons (car list) (child (cdr list) i (+ j 1)))
+                   )
+    )
+ )
+
+ (defun nqueen(open close n)
+   (if (null open) '()
+                   (if (= (success (cdar open) 0 n) 1) (cons (cdar open) (nqueen (cdr open) (cons (car close) close) n))
+                                                  (nqueen (append (generatechild (cdar open) (* n (caar open)) (+ n (* n (caar open))) (caar open) n) (cdr open)) (cons (car open) close) n)
+                    )
+    )
+  )
+
+(defun admissible(list i j n p q)
+  ( if(= (+ (* p n) q) (+ (* i n) j)) 1
+                                    (if (= (car list) 1) (if(or (= (- p i) 0) (= (- q j) 0) (= (abs (- p i)) (abs (- q j)))) 0
+                                                                         (if(= (mod (+ q 1) n) 0) (admissible (cdr list) i j n (+ p 1) 0)
+                                                                                                  (admissible (cdr list) i j n p (+ q 1))
+                                                                          )
+                                                          )
+                                                          (if(= (mod (+ q 1) n) 0) (admissible (cdr list) i j n (+ p 1) 0)
+                                                                                                  (admissible (cdr list) i j n p (+ q 1))
+                                                          )
+                                    )
+  )
+ )
+
+(defun success(list i n)
+    (if (and (null list) (= i n)) 1
+                                 (if (and (null list) (not (= i n))) 0
+                                                               (if (= (car list) 1) (success (cdr list) (+ i 1) n)
+                                                                                    (success (cdr list) i n)
+                                                                )
+                                  )
+
+  )
+)
+
+(defun final(list n calf co)
+ (if (null list) co
+           (progn (format t "~%")
+           (final (cdr list) n (level (car list) n 0) (+ co 1)))))
+
+
+           (defun level(elem n i)
+          (if(null elem) 1
+                        (if(= (mod i n) (- n 1)) (progn (format t "~s ~%" (car elem)) (level (cdr elem) n (+ i 1)))
+                                           (progn (format t "~s " (car elem))(level (cdr elem) n (+ i 1)))
+                         )
+          )
+          )

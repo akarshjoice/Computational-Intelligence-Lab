@@ -1,0 +1,84 @@
+(defun test(open close)
+                (
+                    if (not (null open))
+                                 (  if(equal (car open) '(0 0 0 0)) '()
+                                              (cons (car open) (test (append (cdr open) (remove_rep (generate_child (car open) (cons (car open) close) 1 open))) (cons (car open) close)))
+                                 )
+               )
+            )
+
+
+
+(defun generate_child(parent closed n open)
+              (if (= n 5) '()
+                          (if (and (= (check (node parent parent 1 n) closed) 1) (= (check (node parent parent 1 n) open) 1)) (cons (node parent parent 1 n) (generate_child parent closed (+ n 1) open))
+                                                                  (generate_child parent closed (+ n 1) open))
+              )
+)
+
+(defun check(p closed)
+       (if(null closed) 1
+                        (if(equal p (car closed)) 0
+                                                  (check p (cdr closed))
+                         )
+        )
+ )
+
+
+
+
+ (defun node(parent par n m)
+                    ( if(null parent) '()
+                                     (cond ((= n 1)  (if (equal (car par) '0) (cons '1 (node (cdr parent) par (+ n 1) m))
+                                                                              (cons '0 (node (cdr parent) par (+ n 1) m))))
+
+                                           ((= n 2) (if(= m n) (if(equal (car par) (cadr par)) (if (equal (car parent) '0) (cons '1 (node (cdr parent) par (+ n 1) m))
+                                                                                                                           (cons '0 (node (cdr parent) par (+ n 1) m)))
+                                                                                               (cons (cadr par) (node (cdr parent) par (+ n 1) m)))
+                                                             (cons (car parent) (node (cdr parent) par (+ n 1) m))))
+                                           ((= n 3) (if(= m n) (if(equal (car par) (caddr par)) (if (equal (car parent) '0) (cons '1 (node (cdr parent) par (+ n 1) m))
+                                                                                                                            (cons '0 (node (cdr parent) par (+ n 1) m)))
+                                                                                                (cons (caddr par) (node (cdr parent) par (+ n 1) m)))
+                                                             (cons (car parent) (node (cdr parent) par (+ n 1) m))))
+                                           ((= n 4) (if(= m n) (if(equal (car par) (cadddr par)) (if (equal (car parent) '0) (cons '1 (node (cdr parent) par (+ n 1) m))
+                                                                                                                             (cons '0 (node (cdr parent) par (+ n 1) m)))
+                                                                                               (cons (cadddr par) (node (cdr parent) par (+ n 1) m)))
+                                                            (cons (car parent) (node (cdr parent) par (+ n 1) m))))
+
+                                     )
+                    )
+            )
+
+
+(defun remove_rep(child)
+             (if(null child) '()
+                   (if(= (check_rep (car child) (cdr child)) 0) (cons (car child) (remove_rep (cdr child)))
+                                                                 (remove_rep(cdr child))
+                   )
+             )
+      )
+
+
+(defun check_rep(ele list1)
+            (if(null list1) 0
+                           (if(equal ele (car list1)) 1
+                                                     (check_rep ele (cdr list1))
+                           )
+            )
+      )
+(defun printpath1(lis n)
+                   (if(null lis) '()
+                                 (if(equal (caar lis) n) (if (= n '0) (cons (car lis) (printpath1 (cdr lis) '1))
+                                                                      (cons (car lis) (printpath1 (cdr lis) '0))
+                                                         )
+                                                         (printpath1 (cdr lis) n)
+                                 )
+                    )
+             )
+
+
+
+(printpath1 (test '((1 1 1 1)) '((0 1 1 1) (0 1 1 0) (0 0 1 1) (1 0 0 1) (1 1 0 0))) '1)
+
+
+;(farmer wolf goat cabbage)

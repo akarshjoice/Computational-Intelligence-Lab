@@ -1,0 +1,120 @@
+(defun cal(list listvar listcom)
+ (if(null list) '()
+               (if (listp (car list)) (cons (cal (car list) listvar listcom) (cal (cdr list) listvar listcom))
+
+                 (if(or (equal (car list) '^) (equal (car list) 'v) (equal (car list) '!))
+                                            (cons (car list) (cal (cdr list) listvar listcom))
+                                            (if(= (checker (varno (car list) listvar) listcom 1) 1) (cons 't (cal (cdr list) listvar listcom))
+                                                                                                (cons 'f (cal (cdr list) listvar listcom))
+                                             )                                                   
+
+                  )
+                )
+  )
+)
+
+(defun varno(var listvar)
+  (if(equal (car listvar) var) 1
+                               (+ 1 (varno var (cdr listvar)))))
+
+(defun checker(no listcom i)
+ (if(= i no) (car listcom)
+              (checker no (cdr listcom) (+ i 1))
+ )
+)                                
+
+
+(defun evalu(list result)
+ (if (null list) result
+                 (if(and (listp (car list)) (= (countr result) 0)) (evalu (cdr list) (notchecker (append result (evalu (car list) '()))))
+                                                    (if(and (listp (car list)) (= (countr result) 1)) (evalu (cdr list) (check (notchecker (append result (evalu (car list) '())))))
+                            (if(and (or (equal (car list) 't) (equal (car list) 'f)) (= (countr result) 1))
+                                        (evalu (cdr list) (check (notchecker (append result (list (car list))))))
+                                        (evalu (cdr list) (notchecker (append result (list (car list)))))
+                             )
+                                                     )
+                  )
+  )
+)
+
+(defun notchecker(list)
+(if(null list) '()
+               (if (and (equal (car list) '!) (or (equal (cadr list) 't) (equal (cadr list) 'f))) (if(equal (cadr list) 't) (cons 'f (notchecker (cddr list)))
+                                                                   (cons 't (notchecker (cddr list))))
+                                        (cons (car list) (notchecker (cdr list)))
+               )
+)
+)
+
+
+(defun check(result)
+       (if(equal (cadr result) 'v) (if(and (equal (car result) 'f) (equal (caddr result) 'f)) '(f) '(t))
+                                   (if(equal (cadr result) '^) (if(and (equal (car result) 't) (equal (caddr result) 't)) '(t) '(f))
+                                                                (if(equal (cadr result) '>) (if(and (equal (car result) 't) (equal (caddr result) 'f)) '(f) '(t))
+                                                                  (if(equal (cadr result) '<) (if(or (and (equal (car result) 't) (equal (caddr result) 'f)) (and (equal (car result) 'f) (equal (caddr result) 't))) '(f) '(t)))))))
+
+(defun countr(result)
+   (if(null result) 0
+                   (if (or (equal (car result) 't) (equal (car result) 'f)) 1
+                                                                            (countr (cdr result))
+                   )
+   )
+)
+
+(defun main(list listcom listvar)
+ (if(null listcom) '()
+                    (if(equal (evalu (cal list listvar (car listcom)) '()) '(t)) (cons (reverse (car listcom)) (main list (cdr listcom) listvar))
+                                                                                 (main list (cdr listcom) listvar))))
+
+
+ (defun model(list n)
+        (main list (comb n) (variables list))
+        )
+
+(defun listofvar(list result)
+ (if(null list) result
+                (if(listp (car list)) (listofvar (cdr list) (append (listofvar (car list) '()) result) )
+                (if(or (equal (car list) 'v) (equal (car list) '^) (equal (car list) '!)) (listofvar (cdr list) result)
+                                                                              (listofvar (cdr list) (cons (car list) result))))))
+                                                                             
+ (defun eliminateDuplicates (L)
+  (cond ((null L) L)
+        ((member (car L) (cdr L))
+         (eliminateDuplicates (cdr L)))
+        (t (cons (car L) (eliminateDuplicates (cdr L))))))
+
+
+  (defun variables(list)
+        (eliminateDuplicates (listofvar list '()))
+   )      
+
+   (defun binary-list (n)
+  (cond ((= n 0) (list 0))
+        ((= n 1) (list 1))
+        (t (nconc (binary-list (truncate n 2)) (list (mod n 2))))))
+
+(defun listofbin(i n p)
+ (if(< i p) (cons (noztoadd (binary-list i) n) (listofbin (+ i 1) n p))
+            '()
+ )
+ )
+
+ (defun conz(list nz)
+   (if(= nz 0) list
+               (conz (cons 0 list) (- nz 1))))
+
+  (defun noztoadd(list n)
+    (conz list (- n (length list)))
+    )             
+
+    (defun power(base exp)
+ ( if (eq exp 0) 1 ( * base (power base (- exp 1)) ) )
+)
+
+(defun comb(n)
+    (listofbin 0 n (power 2 n)))
+
+
+                                                                                             
+
+

@@ -1,0 +1,226 @@
+(setf co 0)
+
+ (defun minimax-decision(state)
+                 (min-value state 0)
+
+
+               )
+
+ (defun max-value(state depth)
+                   (setf co (+ co 1))
+                    ( if(= depth 2) (utility state)
+                                                    (for1 (successora state 0) -100 depth)
+                    )
+               )
+
+ (defun for1(list v depth)
+                           (if(null list) v
+                                         (if(> v (min-value (car list) (+ depth 1))) (for1 (cdr list) v depth)
+                                                                         (for1 (cdr list) (min-value (car list) (+ depth 1)) depth)
+                                          )
+                           )
+
+  )
+
+   (defun min-value(state depth)
+   (setf co (+ co 1))
+                    ( if(= depth 2) (utility state)
+                                                    (for2 (successori state 0) 100 depth)
+                    )
+               )
+
+  (defun for2(list v depth)
+                           (if(null list) v
+                                         (if(< v (max-value (car list) (+ depth 1))) (for2 (cdr list) v depth)
+                                                                          (for2 (cdr list) (max-value (car list) (+ depth 1)) depth)
+                                          )
+                           )
+
+  )
+
+(defun successora(state i)
+       (if(= i 9) '()
+                   (if (equal (childa state i 0) state) (successora state (+ i 1))
+                                                 (cons (childa state i 0) (successora state (+ i 1)))
+                   )
+        )
+  )
+
+  (defun childa(state i j)
+         (if(= j 9) '()
+                     (if(= (car state) -2) (if (= i j) (cons 1 (childa (cdr state) i (+ j 1)))
+                                                       (cons -2 (childa (cdr state) i (+ j 1)))
+                                            )
+                                           (cons (car state) (childa (cdr state) i (+ j 1)))
+                      )
+          )
+  )
+
+(defun successori(state i)
+       (if(= i 9) '()
+                   (if (equal (childi state i 0) state) (successori state (+ i 1))
+                                                  (cons (childi state i 0) (successori state (+ i 1)))
+                   )
+        )
+  )
+
+  (defun childi(state i j)
+         (if(= j 9) '()
+                     (if(= (car state) -2) (if (= i j) (cons 0 (childi (cdr state) i (+ j 1)))
+                                                       (cons -2 (childi (cdr state) i (+ j 1)))
+                                            )
+                                           (cons (car state) (childi (cdr state) i (+ j 1)))
+                      )
+          )
+  )
+
+
+
+
+
+
+  (defun sucrwithheuristic(list)
+       ( if(null list) '()
+                       (cons (cons (minimax-decision (car list)) (car list)) (sucrwithheuristic (cdr list)))
+        )
+  )
+
+  (defun comp(state)
+       (if (= (winp state) 1) 'player_won
+                              (if(= (draw state) 1) 'draw
+                                                    (if (= (wincom (big (sucrwithheuristic (successora state 0)) (car (sucrwithheuristic (successora state 0))))) 1) 'player_lose
+                                                                (big (sucrwithheuristic (successora state 0)) (car (sucrwithheuristic (successora state 0))))
+                                                    )
+                              )
+        )
+  )
+
+
+  (defun big(list biggest)
+        (if (null list) (cdr biggest)
+                        (if(> (caar list) (car biggest)) (big (cdr list) (car list))
+                                                         (big (cdr list) biggest)
+                        )
+         )
+   )
+
+ (defun utility(state)
+    ( if(= (wincom state) 1) 1000
+                             (if (= (winp state) 1) -1000
+                                                    (- (rcdc state 0 0) (rcdo state 0 0))
+                              )
+     )
+ )
+
+ (defun wincom(state)
+     (if(or (and (= (elein state 0) 1) (= (elein state 1) 1) (= (elein state 2) 1))
+            (and (= (elein state 3) 1) (= (elein state 4) 1) (= (elein state 5) 1))
+            (and (= (elein state 6) 1) (= (elein state 7) 1) (= (elein state 8) 1))
+            (and (= (elein state 0) 1) (= (elein state 3) 1) (= (elein state 6) 1))
+            (and (= (elein state 1) 1) (= (elein state 4) 1) (= (elein state 7) 1))
+            (and (= (elein state 2) 1) (= (elein state 5) 1) (= (elein state 8) 1))
+            (and (= (elein state 0) 1) (= (elein state 4) 1) (= (elein state 8) 1))
+            (and (= (elein state 2) 1) (= (elein state 4) 1) (= (elein state 6) 1))) 1
+                                                                                     0
+      )
+  )
+
+  (defun winp(state)
+     (if(or (and (= (elein state 0) 0) (= (elein state 1) 0) (= (elein state 2) 0))
+            (and (= (elein state 3) 0) (= (elein state 4) 0) (= (elein state 5) 0))
+            (and (= (elein state 6) 0) (= (elein state 7) 0) (= (elein state 8) 0))
+            (and (= (elein state 0) 0) (= (elein state 3) 0) (= (elein state 6) 0))
+            (and (= (elein state 1) 0) (= (elein state 4) 0) (= (elein state 7) 0))
+            (and (= (elein state 2) 0) (= (elein state 5) 0) (= (elein state 8) 0))
+            (and (= (elein state 0) 0) (= (elein state 4) 0) (= (elein state 8) 0))
+            (and (= (elein state 2) 0) (= (elein state 4) 0) (= (elein state 6) 0))) 1
+                                                                                     0
+      )
+  )
+
+  (defun rcdc(state i count)
+                   (if (= i 0) (if (or (= (elein state 0) 0) (= (elein state 1) 0) (= (elein state 2) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                   )
+                         (if(= i 1) (if (or (= (elein state 3) 0) (= (elein state 4) 0) (= (elein state 5) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                       )
+                         (if (= i 2) (if (or (= (elein state 6) 0) (= (elein state 7) 0) (= (elein state 8) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                   )
+                         (if (= i 3) (if (or (= (elein state 0) 0) (= (elein state 3) 0) (= (elein state 6) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 4) (if (or (= (elein state 1) 0) (= (elein state 4) 0) (= (elein state 7) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 5) (if (or (= (elein state 2) 0) (= (elein state 5) 0) (= (elein state 8) 0)) (rcdc state (+ i 1) count)
+                                                                                                            (rcdc state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 6) (if (or (= (elein state 0) 0) (= (elein state 4) 0) (= (elein state 8) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 7) (if (or (= (elein state 2) 0) (= (elein state 4) 0) (= (elein state 6) 0)) (rcdc state (+ i 1) count)
+                                                                                                             (rcdc state (+ i 1) (+ count 1))
+                                     )
+                                    count )))))))
+                    )
+
+     )
+
+
+
+   (defun rcdo(state i count)
+                   (if (= i 0) (if (or (= (elein state 0) 1) (= (elein state 1) 1) (= (elein state 2) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                   )
+                         (if(= i 1) (if (or (= (elein state 3) 1) (= (elein state 4) 1) (= (elein state 5) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                       )
+                         (if (= i 2) (if (or (= (elein state 6) 1) (= (elein state 7) 1) (= (elein state 8) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                   )
+                         (if (= i 3) (if (or (= (elein state 0) 1) (= (elein state 3) 1) (= (elein state 6) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 4) (if (or (= (elein state 1) 1) (= (elein state 4) 1) (= (elein state 7) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 5) (if (or (= (elein state 2) 1) (= (elein state 5) 1) (= (elein state 8) 1)) (rcdo state (+ i 1) count)
+                                                                                                            (rcdo state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 6) (if (or (= (elein state 0) 1) (= (elein state 4) 1) (= (elein state 8) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                     )
+                         (if (= i 7) (if (or (= (elein state 2) 1) (= (elein state 4) 1) (= (elein state 6) 1)) (rcdo state (+ i 1) count)
+                                                                                                             (rcdo state (+ i 1) (+ count 1))
+                                     )
+                                    count )))))))
+                    )
+                    )
+
+(defun elein(state pos)
+        (if(= pos 0) (car state)
+                     (elein (cdr state) (- pos 1))
+         )
+  )
+
+ (defun draw(state)
+    (if(null state) 1
+                    (if(= (car state) -2) 0
+                                          (draw (cdr state))
+                     )
+    )
+ )
+
+(defun human()
+   (compi (read)))
+
+(defun compi(state)
+                  (setf co 0)
+                  (write (comp state))
+                  
+                  (setf co (/ co 8))
+                  (write co)
+                     (human)
+             )

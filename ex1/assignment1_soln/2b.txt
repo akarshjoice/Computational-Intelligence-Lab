@@ -1,0 +1,81 @@
+ (defun node(parent par n m j1 j2)
+                    ( if(null parent) '()
+                                     (cond ((= m 1)  (if(= n 1) (cons j1 (node (cdr parent) par (+ n 1) m j1 j2))
+                                                                (cons (car parent) (node (cdr parent) par (+ n 1) m j1 j2))))
+
+                                           ((= m 2) (if (= n 1) (cons (car parent) (node (cdr parent) par (+ n 1) m j1 j2))
+                                                                (cons j2 (node (cdr parent) par (+ n 1) m j1 j2))))
+                                           ((= m 3) (if (= n 1) (if(>= (- (car parent) (- j2 (cadr par))) 0) (cons (- (car parent) (- j2 (cadr par))) (node (cdr parent) par (+ n 1) m j1 j2))
+                                                                                                              (cons 0 (node (cdr parent) par (+ n 1) m j1 j2)))
+                                                                (if(<= (- (car par) (- j2 (car parent))) 0) (cons (+ (car par) (car parent)) (node (cdr parent) par (+ n 1) m j1 j2))                                                                                                                                           (cons j2 (node (cdr parent) par (+ n 1) m j1 j2)))))
+                                          ((= m 4) (if(= n 1) (if(<= (- (cadr par) (- j1 (car par))) 0) (cons (+ (car par) (cadr par)) (node (cdr parent) par (+ n 1) m j1 j2))
+                                                                                                        (cons j1 (node (cdr parent) par (+ n 1) m j1 j2)))
+                                                              (if(>= (- (cadr par) (- j1 (car par))) 0) (cons (- (cadr par) (- j1 (car par))) (node (cdr parent) par (+ n 1) m j1 j2))
+                                                                                                        (cons 0 (node (cdr parent) par (+ n 1) m j1 j2)))))
+                                         ((= m 5) (if(= n 1) (cons 0 (node (cdr parent) par (+ n 1) m j1 j2))
+                                                             (cons (cadr par) (node (cdr parent) par (+ n 1) m j1 j2))))
+                                          ((= m 6) (if(= n 1)(cons (car par) (node (cdr parent) par (+ n 1) m j1 j2))
+                                                             (cons 0 (node (cdr parent) par (+ n 1) m j1 j2))))
+                                    )
+                    )
+   )
+
+ (defun jug(open close final j1 j2)
+                (
+                    if (not (null open))
+                                 (  if(equal (car open) final) (cons final '())
+                                              (cons (car open) (jug (append  (remove_rep (generate_child (car open) (cons (car open) close) 1 open j1 j2)) (cdr open)) (cons (car open) close) final j1 j2))
+                                 )
+               )
+            )
+
+(defun generate_child(parent closed n open j1 j2)
+              (if (= n 7) '()
+                          (if (and (= (check (node parent parent 1 n j1 j2) closed) 1) (= (check (node parent parent 1 n j1 j2) open) 1)) (cons (node parent parent 1 n j1 j2) (generate_child parent closed (+ n 1) open j1 j2))
+                                                                  (generate_child parent closed (+ n 1) open j1 j2))
+              )
+)
+
+
+ (defun check(p closed)
+       (if(null closed) 1
+                        (if(equal p (car closed)) 0
+                                                  (check p (cdr closed))
+                         )
+        )
+ )
+
+(defun remove_rep(child)
+             (if(null child) '()
+                   (if(= (check_rep (car child) (cdr child)) 0) (cons (car child) (remove_rep (cdr child)))
+                                                                 (remove_rep(cdr child))
+                   )
+             )
+      )
+
+
+(defun check_rep(ele list1)
+            (if(null list1) 0
+                           (if(equal ele (car list1)) 1
+                                                     (check_rep ele (cdr list1))
+                           )
+            )
+      )
+(defun  reversal(list)
+                    (if(null list) '()
+                                   (append (reversal (cdr list)) (cons (car list) '()))
+                    )
+             )
+(defun printing(first list j1 j2)
+                      (if(null list) '()
+                                      (if(= (check first (generate_child (car list) (car list) 1 (car list) j1 j2)) 0) (cons (car list) (printing (car list) (cdr list) j1 j2))
+                                                                                                            (printing first (cdr list) j1 j2)
+                                      )
+                      )
+                )
+(defun prob(input final j1 j2)
+                          (reversal (printing (car (reversal (jug input '() final j1 j2))) (cdr (reversal (jug input '() final j1 j2))) j1 j2))
+               )
+
+
+
